@@ -12,51 +12,102 @@
 
 #include "get_next_line.h"
 
-int ft_strcmp(char *s1, char *s2)
+unsigned int     ft_strlen(char *str)
 {
     int i;
 
     i = 0;
-    while (s1 && s2 && s1[i] == s2[i] && i < BUFFER_SIZE - 1)
+    while (str[i])
         i++;
-    return (s1[i] - s2[i]);
+    return (i);
+}
+
+char    *ft_substr(char *s, unsigned int start, size_t len)
+{
+    char    *str;
+    unsigned int  i;
+    unsigned int  j;
+
+    if (!s || start >= ft_strlen(s))
+        return (ft_strdup(""));
+    if (ft_strlen(&(s[start])) < len)
+        len = ft_strlen(&(s[start]));
+    str = malloc(sizeof(char) * len + 1);
+    if (!str)
+        return (NULL);
+    i = 0;
+    j = 0;
+    while (s[i])
+    {
+        if (i >= start && j < len)
+        {
+            str[j] = s[i];
+            j++;
+        }
+        i++;
+    }
+    str[j] = 0;
+    return (str);
+}
+
+char    *ft_strjoin(char *s1, char *s2)
+{
+    char    *dest;
+    int     size;
+    int     i;
+    int     j;
+
+    if (!s1)
+        return (s2);
+    if (!s2)
+        return (s1);
+    size = ft_strlen(s1) + ft_strlen(s2);
+    dest = malloc(sizeof(char) * size + 1);
+    if (!dest)
+        return (NULL);
+    i = 0;
+    j = 0;
+    while (s1[i])
+    {
+        dest[i] = s1[i];
+        i++;
+    }
+    while (s2[j])
+        dest[i++] = s2[j++];
+    dest[i] = '\0';
+    return (dest);
 }
 
 char    *ft_strdup(char *s1)
 {
-    char    *str;
+    char    *dest;
     int     i;
 
-    str = malloc(sizeof(char) * BUFFER_SIZE);
-    if (!str)
+    dest = (char *)malloc(sizeof(char) * (ft_strlen(s1) + 1));
+    if (!dest)
         return (NULL);
     i = 0;
     while (s1[i])
     {
-        str[i] = s1[i];
+        dest[i] = s1[i];
         i++;
     }
-    str[i] = 0;
-    return (str);
+    dest[i] = 0;
+    return (dest);
 }
 
-char    *new_line(int fd, char *str)
+char    *ft_strchr(char *s, char c)
 {
-    char    c;
-    int     i;
-    int     n;
+    unsigned int    i;
 
-    n = read(fd, &c, 1);
     i = 0;
-    while (n == 1 && c != '\n')
+    while (s[i])
     {
-        str[i] = c;
-        printf("i = %d, s = %c\n", i, str[i]);
+        if (s[i] == c)
+            return (s + i);
         i++;
-        if (i == BUFFER_SIZE)
-            break ;
-        n = read(fd, &c, 1);
     }
-    str[i] = 0;
-    return (str);
-} 
+    if (s[i] == c)
+        return (s + i);
+    return (NULL);
+}
