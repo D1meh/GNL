@@ -5,73 +5,107 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mtaouil <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/03/26 11:19:50 by mtaouil           #+#    #+#             */
-/*   Updated: 2021/03/26 11:19:51 by mtaouil          ###   ########.fr       */
+/*   Created: 2021/03/30 14:46:55 by mtaouil           #+#    #+#             */
+/*   Updated: 2021/03/30 14:47:05 by mtaouil          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <string.h>
 
-int     len_buff(char *buff)
+char    *ft_strjoin(char *s1, char *s2)
 {
-    int i;
+    char    *dest;
+    int     size;
+    int     i;
+    int     j;
 
+    if (!s1)
+        return (s2);
+    if (!s2)
+        return (s1);
+    size = ft_strlen(s1) + ft_strlen(s2);
+    dest = malloc(sizeof(char) * size + 1);
+    if (!dest)
+        return (NULL);
     i = 0;
-    while (buff[i] && buff[i] != '\n')
+    j = 0;
+    while (s1[i])
+    {
+        dest[i] = s1[i];
         i++;
-    return (i);
+    }
+    while (s2[j])
+        dest[i++] = s2[j++];
+    dest[i] = '\0';
+    return (dest);
 }
 
-char    *new_buf(int fd, char *buf, char *str)
+char    *new_line(int fd, int a)
 {
+    char    *s;
     char    *tmp;
-    int n;
+    char    buf[BUFFER_SIZE + 1];
+    int     n;
 
+    s = "";
     n = read(fd, buf, BUFFER_SIZE);
-    while (n)
+    while (n != 0)
     {
+        if (n < 0)
+            return (NULL);
         buf[n] = '\0';
-        tmp = ft_strdup(str);
-        str = ft_strjoin(tmp, buf);
-        free(tmp);
+        tmp = s;
+        s = ft_strjoin(tmp, buf);
+        if (a)
+            free(tmp);
         if (ft_strchr(buf, '\n') != NULL)
             break ;
+        a++;
         n = read(fd, buf, BUFFER_SIZE);
     }
-    return (str);
+    return (s);
 }
 
 int get_next_line(int fd, char **line)
 {
-    static char *str = "";
-    char        buf[BUFFER_SIZE + 1];
+    static char *s = "";
+    static int  a = 0;
+    char        *buf;
+    int         len;
 
-    if (BUFFER_SIZE < 1 || fd < 0 || read(fd, buf, 0) < 0)
+    if (fd < 0 || BUFFER_SIZE < 1 || !line)
         return (-1);
-    str = new_buf(fd, buf, str);
-    printf("str = %s\n", str);
-    *line = ft_substr(str, 0, len_buff(str));
-    str = ft_substr(str, len_buff(str) + 1, ft_strlen(str) - len_buff(str));
-    printf("2: str = %s\n", str);
-    return (1);
+    if (ft_strchr(s, '\n') != NULL)
+        buf = s;
+    else
+        buf = ft_strjoin(s, new_line(fd, a));
+    if (!buf)
+        return (-1);
+    len = buff_len(buf);
+    *line = ft_substr(buf, 0, len);
+    s = ft_substr(buf, len + 1, ft_strlen(buf) - len);
+    free(buf);
+    if (ft_strchr(buf, '\n') != NULL)
+        return (1);
+    free(s);
+    return (0);
 }
 
-int main(void)
+/* int main(void)
 {
+    char *line;
     int fd;
-    char *line = "acfevrdfghf";
 
     fd = open("alphabet.txt", O_RDONLY);
+    printf("1er appel\n");
+    get_next_line(fd, &line);
+    printf("line = %s\n2e appel\n", line);
+    get_next_line(fd, &line);
+    printf("line = %s\n3e appel\n", line);
+    get_next_line(fd, &line);
+    printf("line = %s\n4e appel\n", line);
+    get_next_line(fd, &line);
+    printf("line = %s\n5e appel\n", line);
     get_next_line(fd, &line);
     printf("line = %s\n", line);
-    get_next_line(fd, &line);
-    printf("line = %s\n", line);
-    get_next_line(fd, &line);
-    printf("line = %s\n", line);
-    get_next_line(fd, &line);
-    printf("line = %s\n", line);
-    get_next_line(fd, &line);
-    printf("line = %s\n", line);
-}
-
+} */
