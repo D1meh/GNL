@@ -1,4 +1,0 @@
-abcdefghijklmnopqrstuvwxyzzzzzzzzzzzzzzzz
-bcdefghijklmnopqrstuvwxyza
-cdefghijklmnopqrstuvwxyzab
-defghijklmnopqrstuvwxyzabc
